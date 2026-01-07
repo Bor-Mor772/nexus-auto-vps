@@ -1,0 +1,19 @@
+
+name: Mydiscord
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Deploying VPS
+        run: |
+          Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+          Expand-Archive ngrok.zip
+          .\ngrok\ngrok.exe authtoken 2hbZgX1CpuKEHsG4muxj6FF5EQL_7onmAtgmeQKL5jagXJuPR
+          $Pass = ConvertTo-SecureString "admin@2025Re" -AsPlainText -Force
+          New-LocalUser "AdminNexus" -Password $Pass -Description "Admin"
+          Add-LocalGroupMember -Group "Administrators" -Member "AdminNexus"
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp --region jp 3389"
+          sleep 21600
